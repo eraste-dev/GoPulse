@@ -1,47 +1,64 @@
-# Nom du binaire
+# GoPulse Makefile
+# Configuration
 BINARY_NAME=monitor-app
-# Fichier de config
 CONFIG_FILE=config.json
-# Fichier de log
 LOG_FILE=monitoring.log
 
-.PHONY: all build run clean help
+# Default target
+.DEFAULT_GOAL := help
 
-all: build
+.PHONY: help up down logs db-init agent-build agent-run clean
 
-## Compilier l'application
-build:
-	@echo "Construction du binaire..."
+## -- APP STACK (Docker) --
+
+## Démarrer toute la solution (Dashboard + Agent + DB)
+up:
+	@echo "🚀 Démarrage de la stack GoPulse..."
+	docker compose up --build -d
+	@echo "✅ Dashboard accessible sur http://localhost:3000"
+
+## Arrêter toute la solution
+down:
+	@echo "🛑 Arrêt de la stack..."
+	docker compose down
+
+## Voir les journaux (logs) en temps réel
+logs:
+	docker compose logs -f
+
+## Initialiser ou mettre à jour la base de données
+db-init:
+	@echo "📦 Initialisation de la base de données..."
+	docker compose exec web npx prisma@5 db push
+
+## -- AGENT LOCAL (Go) --
+
+## Compiler l'agent de monitoring uniquement
+agent-build:
+	@echo "🔨 Compilation de l'agent..."
 	go build -o $(BINARY_NAME)
-	@echo "Construction terminée : ./$(BINARY_NAME)"
+	@echo "✅ Terminé : ./$(BINARY_NAME)"
 
-## Lancer l'application
-run: build
-	@echo "Lancement de l'application..."
+## Lancer l'agent de monitoring localement
+agent-run: agent-build
+	@echo "📡 Lancement de l'agent..."
 	./$(BINARY_NAME) $(CONFIG_FILE)
 
-## Lancer l'application en arrière-plan (nohup)
-start-background: build
-	@echo "Lancement en arrière-plan..."
-	nohup ./$(BINARY_NAME) $(CONFIG_FILE) > /dev/null 2>&1 &
-	@echo "Application lancée. PID :"
-	@pgrep -f $(BINARY_NAME)
+## -- UTILS --
 
-## Arrêter l'application (kill)
-stop:
-	@echo "Arrêt de l'application..."
-	pkill -f $(BINARY_NAME) || echo "Application non trouvée"
-
-## Nettoyer les fichiers générés (binaire et logs)
+## Nettoyer le projet (supprimer binaire et logs)
 clean:
-	@echo "Nettoyage..."
+	@echo "🧹 Nettoyage..."
 	rm -f $(BINARY_NAME)
 	rm -f $(LOG_FILE)
-	@echo "Nettoyage terminé."
+	@echo "✨ Projet propre."
 
-## Afficher l'aide
+## Afficher cette aide
 help:
-	@echo "Commandes disponibles :"
+	@echo "-----------------------------------------------------------------------"
+	@echo "                     🌐 GOPULSE - COMMAND CENTER"
+	@echo "-----------------------------------------------------------------------"
+	@echo ""
 	@awk '/^[a-zA-Z\-\_0-9]+:/ { \
 		helpMessage = match(lastLine, /^## (.*)/); \
 		if (helpMessage) { \
@@ -51,3 +68,5 @@ help:
 		} \
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
+	@echo ""
+	@echo "-----------------------------------------------------------------------"

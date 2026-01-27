@@ -1,6 +1,6 @@
 {
   "target_url": "https://google.com",
-  "check_interval_seconds": 300,
+  "check_interval_seconds": 60,
   "request_timeout_seconds": 10,
   "log_file_path": "./monitoring.log",
   "email_config": {
@@ -15,6 +15,6 @@
     "enabled": false,
     "url": "http://localhost:8080/api/report",
     "auth_token": "",
-    "report_success": false
+    "report_success": true
   }
 }

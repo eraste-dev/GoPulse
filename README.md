@@ -1,79 +1,73 @@
-# Monitor App (Ping Website)
+# GoPulse - Monitoring & Dashboard
 
-Application autonome de surveillance de site web écrite en Go.
+Solution complète de surveillance de site web, composée de deux parties autonomes mais interconnectées :
+1.  **Agent (GoPulse Agent)** : Application Golang ultra-légère qui ping le site et envoie des alertes.
+2.  **Dashboard (GoPulse Web)** : Interface Next.js pour visualiser l'historique et les statistiques.
 
-## Fonctionnalités
-- Vérifie l'accessibilité d'une URL configurée à intervalle régulier via un simple Ping HTTP.
-- Envoie une alerte par Email en cas d'échec (timeout, erreur 404/500, erreur DNS).
-- Logue toutes les tentatives (succès et échecs) dans un fichier `monitoring.log` local.
-- Fonctionne avec un simple exécutable binaire et un fichier de configuration JSON.
+## 🚀 Démarrage Rapide (Docker)
 
-## Prérequis
-Aucun ! L'application est un binaire autonome.
+La méthode recommandée pour lancer la stack complète (Dashboard + Agent + Base de données).
 
-## Configuration
-Editez le fichier `config.json` :
+```bash
+# 1. Configurer l'agent
+cp config.json.example config.json
+# Editez config.json avec vos paramètres SMTP
+
+# 2. Lancer la stack
+make docker-up
+
+# 3. Initialiser la base de données
+make docker-db-push
+```
+
+Accédez ensuite au Dashboard : **http://localhost:3000**
+*   **Login** : `admin@monitor.com`
+*   **Password** : `admin`
+
+---
+
+## 🏗️ Architecture
+
+### 1. Agent (Golang)
+*   **Rôle** : Surveille l'URL cible, logue localement, envoie des emails d'alerte.
+*   **Autonomie** : Peut fonctionner seul sans le dashboard.
+*   **Docker** : En mode Docker, il envoie aussi les données au Dashboard via Webhook.
+
+### 2. Dashboard (Next.js 14)
+*   **Rôle** : Affiche les graphiques de temps de réponse et l'historique uptime.
+*   **Stack** : Next.js, Prisma, PostgreSQL, TailwindCSS, ShadcnUI via Recharts.
+*   **Sécurité** : Authentification via NextAuth.
+
+## 🛠️ Commandes Utiles (Makefile)
+
+Tapez simplement `make` à la racine pour voir toutes les options.
+
+### Docker (Stack complète)
+*   `make up`      : Lance tout en arrière-plan (Dashboard + Agent + DB).
+*   `make logs`    : Affiche les logs de tous les conteneurs.
+*   `make down`    : Arrête tous les services.
+*   `make db-init` : Initialise le schéma de la base de données.
+
+### Agent Seul (Mode Standalone)
+*   `make agent-build` : Compile l'agent localement.
+*   `make agent-run`   : Lance l'agent localement sur votre machine.
+*   `make clean`       : Supprime les fichiers temporaires.
+
+## 📝 Configuration (config.json)
 
 ```json
 {
-  "target_url": "https://google.com",
-  "check_interval_seconds": 300,
-  "request_timeout_seconds": 10,
-  "log_file_path": "./monitoring.log",
+  "target_url": "https://votre-site.com",
+  "check_interval_seconds": 60,
   "email_config": {
     "enabled": true,
     "smtp_server": "smtp.gmail.com",
-    "smtp_port": 587,
-    "sender_email": "votre@email.com",
-    "sender_password": "votre_mot_de_passe_app",
-    "recipient_email": "admin@email.com"
+    ...
+  },
+  "webhook_config": {
+    "enabled": true, 
+    "url": "http://web:3000/api/report" // URL interne Docker
   }
 }
 ```
-
-## Compilation (si modification du code source)
-Pour recompiler l'application depuis les sources :
-```bash
-go build -o monitor-app
-```
-
-## Utilisation avec Makefile (Recommandé)
-Pour simplifier les opérations courantes, utilisez les commandes `make` :
-
-```bash
-make build              # Compile l'application
-make run                # Compile et lance l'application
-make start-background   # Lance l'application en arrière-plan (nohup)
-make stop               # Arrête l'application en cours d'exécution
-make clean              # Supprime le binaire et les logs
-make help               # Affiche cette aide
-```
-
-## Déploiement en arrière-plan (Linux)
-Pour que l'application tourne en permanence, vous pouvez utiliser `nohup` ou créer un service `systemd`.
-
-### Via nohup (rapide)
-```bash
-nohup ./monitor-app > app.log 2>&1 &
-```
-
-### Via Systemd (recommandé)
-Créez un fichier `/etc/systemd/system/ping-monitor.service` :
-```ini
-[Unit]
-Description=Ping Website Monitor
-After=network.target
-
-[Service]
-ExecStart=/chemin/vers/monitor-app /chemin/vers/config.json
-Restart=always
-User=votre_user
-
-[Install]
-WantedBy=multi-user.target
-```
-Puis activez le service :
-```bash
-sudo systemctl enable ping-monitor
-sudo systemctl start ping-monitor
-```
+*Note : En mode Docker, `WEBHOOK_URL` est automatiquement configuré via variable d'environnement.*

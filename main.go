@@ -49,6 +49,14 @@ func main() {
 		log.Fatalf("Erreur lors du chargement de la configuration: %v", err)
 	}
 
+	// Override Webhook URL from Env (Docker friendly)
+	if envWebhook := os.Getenv("WEBHOOK_URL"); envWebhook != "" {
+		config.Webhook.URL = envWebhook
+		// Auto-enable if env var is present
+		config.Webhook.Enabled = true
+		log.Printf("Webhook URL override from ENV: %s", config.Webhook.URL)
+	}
+
 	log.Printf("Démarrage du monitoring pour : %s (Intervalle: %ds)", config.TargetURL, config.CheckInterval)
 
 	ticker := time.NewTicker(time.Duration(config.CheckInterval) * time.Second)
