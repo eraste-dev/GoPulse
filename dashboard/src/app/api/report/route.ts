@@ -1,26 +1,33 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { target_url, status, status_code, response_time_ms, error_message, agent_id } = body;
+        const { monitor_id, status, status_code, response_time_ms, error_message, region } = body;
 
-        // Validation basique
-        if (!target_url || !status) {
+        if (!monitor_id || !status) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        // Vérifier que le moniteur existe
+        const monitor = await prisma.monitor.findUnique({
+            where: { id: monitor_id }
+        });
+
+        if (!monitor) {
+            return NextResponse.json({ error: 'Monitor not found' }, { status: 404 });
         }
 
         // Enregistrement dans la base de données
         const report = await prisma.pingReport.create({
             data: {
-                targetUrl: target_url,
+                monitorId: monitor_id,
                 status: status,
                 statusCode: status_code || 0,
                 responseTime: response_time_ms || 0,
                 errorMessage: error_message,
-                agentId: agent_id,
+                region: region || 'unknown',
             },
         });
 

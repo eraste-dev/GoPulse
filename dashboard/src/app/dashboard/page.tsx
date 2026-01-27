@@ -12,6 +12,7 @@ export default async function DashboardPage() {
   const reports = await prisma.pingReport.findMany({
     orderBy: { timestamp: 'desc' },
     take: 50,
+    include: { monitor: true }
   });
 
   if (reports.length === 0) {
@@ -37,7 +38,7 @@ export default async function DashboardPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Monitoring Dashboard</h1>
         <Badge variant={isUp ? 'default' : 'destructive'} className="text-lg px-4 py-1">
-          {latest.targetUrl}
+          {latest.monitor.name} ({latest.monitor.url})
         </Badge>
       </div>
 
@@ -105,9 +106,10 @@ export default async function DashboardPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Statut</TableHead>
+                <TableHead>Moniteur</TableHead>
+                <TableHead>Région</TableHead>
                 <TableHead>Code</TableHead>
                 <TableHead>Temps (ms)</TableHead>
-                <TableHead>Message</TableHead>
                 <TableHead className="text-right">Date</TableHead>
               </TableRow>
             </TableHeader>
@@ -119,11 +121,12 @@ export default async function DashboardPage() {
                       {report.status}
                     </Badge>
                   </TableCell>
+                  <TableCell className="font-medium">{report.monitor.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="capitalize">{report.region}</Badge>
+                  </TableCell>
                   <TableCell>{report.statusCode}</TableCell>
                   <TableCell>{report.responseTime.toFixed(0)}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm truncate max-w-[200px]">
-                    {report.errorMessage || '-'}
-                  </TableCell>
                   <TableCell className="text-right">
                     {new Date(report.timestamp).toLocaleString()}
                   </TableCell>

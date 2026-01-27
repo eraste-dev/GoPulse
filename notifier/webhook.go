@@ -20,17 +20,17 @@ type WebhookConfig struct {
 
 // WebhookPayload represents the data sent to the remote monitoring app
 type WebhookPayload struct {
-	TargetURL    string  `json:"target_url"`
+	MonitorID    string  `json:"monitor_id"`
 	Status       string  `json:"status"` // "UP" or "DOWN"
 	StatusCode   int     `json:"status_code"`
 	ResponseTime float64 `json:"response_time_ms"`
 	Timestamp    string  `json:"timestamp"`
 	ErrorMessage string  `json:"error_message,omitempty"`
-	AgentID      string  `json:"agent_id"` // Configured identifier if multiple agents
+	Region       string  `json:"region"`
 }
 
 // SendWebhook sends the ping result to the configured webhook URL
-func SendWebhook(config WebhookConfig, targetURL string, result *monitor.PingResult) error {
+func SendWebhook(config WebhookConfig, monitorID string, region string, result *monitor.PingResult) error {
 	if !config.Enabled {
 		return nil
 	}
@@ -41,13 +41,13 @@ func SendWebhook(config WebhookConfig, targetURL string, result *monitor.PingRes
 	}
 
 	payload := WebhookPayload{
-		TargetURL:    targetURL,
+		MonitorID:    monitorID,
 		Status:       "DOWN",
 		StatusCode:   result.StatusCode,
 		ResponseTime: float64(result.Duration.Milliseconds()),
 		Timestamp:    result.Timestamp.Format(time.RFC3339),
 		ErrorMessage: result.ErrorMessage,
-		AgentID:      "ping-agent-01", // Hardcoded for now, could be in config
+		Region:       region,
 	}
 
 	if result.Success {
@@ -72,7 +72,7 @@ func SendWebhook(config WebhookConfig, targetURL string, result *monitor.PingRes
 	if config.AuthToken != "" {
 		req.Header.Set("Authorization", "Bearer "+config.AuthToken)
 	}
-	req.Header.Set("User-Agent", "PingWebsite-Agent/1.0")
+	req.Header.Set("User-Agent", "GoPulse-Agent/1.0")
 
 	resp, err := client.Do(req)
 	if err != nil {

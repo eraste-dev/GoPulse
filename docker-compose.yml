@@ -22,6 +22,8 @@ services:
       context: ./dashboard
       dockerfile: ../docker/web.Dockerfile
     container_name: monitoring-web
+    volumes:
+      - ./dashboard/prisma:/app/prisma
     ports:
       - "3000:3000"
     environment:

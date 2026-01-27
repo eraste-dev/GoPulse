@@ -1,5 +1,5 @@
 {
-  "target_url": "https://google.com",
+  "target_url": "https://toogle.com",
   "check_interval_seconds": 60,
   "request_timeout_seconds": 10,
   "log_file_path": "./monitoring.log",

@@ -9,25 +9,53 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String
+  name         String?
+  maxMonitors  Int       @default(3) // Limite selon la licence
+  monitors     Monitor[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@map("users")
 }
 
+model Monitor {
+  id              String       @id @default(cuid())
+  name            String
+  url             String
+  method          String       @default("GET")
+  interval        Int          @default(60) // secondes
+  timeout         Int          @default(10) // secondes
+  threshold       Int          @default(3)  // tentatives avant alerte
+  headers         Json?        // Headers personnalisés
+  userAgent       String?      @default("GoPulse-Agent/1.0")
+  expectedStatus  Int          @default(200)
+  regions         String[]     @default(["europe"]) // Liste des régions de test
+  
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  reports         PingReport[]
+  
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("monitors")
+}
+
 model PingReport {
   id           String   @id @default(cuid())
-  targetUrl    String
   status       String   // "UP" or "DOWN"
   statusCode   Int
   responseTime Float    // in ms
   errorMessage String?
+  region       String   @default("unknown")
   timestamp    DateTime @default(now())
-  agentId      String?
+  
+  monitorId    String
+  monitor      Monitor  @relation(fields: [monitorId], references: [id])
 
   @@map("ping_reports")
 }
