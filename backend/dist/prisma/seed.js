@@ -7,12 +7,23 @@ async function main() {
     console.log('🌱 Starting seeding...');
     await prisma.pingReport.deleteMany();
     await prisma.monitor.deleteMany();
+    await prisma.session.deleteMany();
+    await prisma.account.deleteMany();
     await prisma.user.deleteMany();
+    await prisma.userRole.deleteMany();
     const admin = await prisma.user.create({
         data: {
             email: 'admin@gopulse.com',
             password: 'setup_password_hash_here',
             name: 'GoPulse Admin',
+            status: 'ACTIVE',
+            role: {
+                create: {
+                    slug: 'admin',
+                    name: 'Administrator',
+                    isDefault: true
+                }
+            },
             monitors: {
                 create: [
                     {
@@ -34,7 +45,18 @@ async function main() {
             monitors: true,
         },
     });
-    console.log(`👤 Created admin user: ${admin.email}`);
+    await prisma.user.create({
+        data: {
+            email: 'demo@kt.com',
+            password: 'setup_password_hash_here',
+            name: 'Demo User',
+            status: 'ACTIVE',
+            role: {
+                connect: { slug: 'admin' }
+            }
+        }
+    });
+    console.log(`👤 Created users: ${admin.email}, demo@kt.com`);
     for (const monitor of admin.monitors) {
         console.log(`📊 Generating reports for ${monitor.name}...`);
         for (let i = 0; i < 50; i++) {

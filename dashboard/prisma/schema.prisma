@@ -1,14 +1,14 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// User Modoule
+// --- MODULE CORE (NextAuth + Metronic User) ---
 enum UserStatus {
   INACTIVE
   ACTIVE
@@ -16,28 +16,33 @@ enum UserStatus {
 }
 
 model User {
-  id              String      @id @default(uuid())
-  email           String      @unique
+  id              String     @id @default(uuid())
+  email           String     @unique
   password        String?
   country         String?
   timezone        String?
   name            String?
-  roleId          String
-  status          UserStatus  @default(INACTIVE) // Status of the invitation
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  roleId          String? // Rendu optionnel pour éviter blocage seed, ou gérer dans seed
+  status          UserStatus @default(INACTIVE)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
   lastSignInAt    DateTime?
   emailVerifiedAt DateTime?
-  isTrashed       Boolean     @default(false)
+  isTrashed       Boolean    @default(false)
   avatar          String?
   invitedByUserId String?
-  isProtected     Boolean     @default(false) // Prevents deletion/modification
-  role            UserRole    @relation(fields: [roleId], references: [id])
-  systemLog       SystemLog[]
-  accounts        Account[]
-  Session         Session[]
+  isProtected     Boolean    @default(false)
 
-  // Indexes for efficient querying
+  // Relations Metronic
+  role      UserRole?   @relation(fields: [roleId], references: [id])
+  systemLog SystemLog[]
+  accounts  Account[]
+  sessions  Session[]
+
+  // Relations GoPulse
+  maxMonitors Int       @default(3)
+  monitors    Monitor[]
+
   @@index([invitedByUserId])
   @@index([roleId])
   @@index([status])
@@ -167,4 +172,41 @@ model SystemSetting {
   notifySystemErrorFailureEmail  Boolean  @default(true)
   notifySystemErrorWeb           Boolean  @default(true)
   notifySystemErrorRoleIds       String[]
+}
+
+// --- MODULE MONITORING (GoPulse) ---
+
+model Monitor {
+  id             String   @id @default(cuid())
+  name           String
+  url            String
+  method         String   @default("GET")
+  interval       Int      @default(60) // secondes
+  timeout        Int      @default(10) // secondes
+  threshold      Int      @default(3) // tentatives avant alerte
+  headers        Json? // Headers personnalisés
+  userAgent      String?  @default("GoPulse-Agent/1.0")
+  expectedStatus Int      @default(200)
+  regions        String[] @default(["europe"]) // Liste des régions de test
+
+  userId  String
+  user    User         @relation(fields: [userId], references: [id])
+  reports PingReport[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PingReport {
+  id           String   @id @default(cuid())
+  status       String // "UP" or "DOWN"
+  statusCode   Int
+  responseTime Float // in ms
+  errorMessage String?
+  region       String   @default("unknown")
+  timestamp    DateTime @default(now())
+
+  monitorId String
+  monitor   Monitor @relation(fields: [monitorId], references: [id])
 }

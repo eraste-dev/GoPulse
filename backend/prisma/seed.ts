@@ -10,7 +10,10 @@ async function main() {
     // 1. Clean database
     await prisma.pingReport.deleteMany();
     await prisma.monitor.deleteMany();
+    await prisma.session.deleteMany();
+    await prisma.account.deleteMany();
     await prisma.user.deleteMany();
+    await prisma.userRole.deleteMany();
 
     // 2. Create Admin User
     const admin = await prisma.user.create({
@@ -18,6 +21,14 @@ async function main() {
             email: 'admin@gopulse.com',
             password: 'setup_password_hash_here', // In prod, use bcrypt
             name: 'GoPulse Admin',
+            status: 'ACTIVE',
+            role: {
+                create: {
+                    slug: 'admin',
+                    name: 'Administrator',
+                    isDefault: true
+                }
+            },
             monitors: {
                 create: [
                     {
@@ -40,9 +51,22 @@ async function main() {
         },
     });
 
-    console.log(`👤 Created admin user: ${admin.email}`);
+    // 3. Create Demo User (for Metronic template defaults)
+    await prisma.user.create({
+        data: {
+            email: 'demo@kt.com',
+            password: 'setup_password_hash_here',
+            name: 'Demo User',
+            status: 'ACTIVE',
+            role: {
+                connect: { slug: 'admin' }
+            }
+        }
+    });
 
-    // 3. Generate Reports for each Monitor
+    console.log(`👤 Created users: ${admin.email}, demo@kt.com`);
+
+    // 4. Generate Reports for each Monitor
     for (const monitor of admin.monitors) {
         console.log(`📊 Generating reports for ${monitor.name}...`);
 

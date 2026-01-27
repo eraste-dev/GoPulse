@@ -26,56 +26,38 @@ const authOptions: NextAuthOptions = {
           );
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-
-        if (!user) {
-          throw new Error(
-            JSON.stringify({
-              code: 404,
-              message: 'User not found. Please register first.',
+        try {
+          const res = await fetch(`http://api:3000/auth/login`, {
+            method: 'POST',
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
             }),
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(
+              JSON.stringify({
+                code: res.status,
+                message: data.message || 'Invalid credentials',
+              }),
+            );
+          }
+
+          // Return user object + access_token to be stored in JWT/Session
+          return {
+            ...data.user,
+            id: data.user.sub, // sub is user.id from backend
+            accessToken: data.access_token,
+          };
+        } catch (err) {
+          throw new Error(
+            err instanceof Error ? err.message : 'Authentication failed',
           );
         }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password || '',
-        );
-
-        if (!isPasswordValid) {
-          throw new Error(
-            JSON.stringify({
-              code: 401,
-              message: 'Invalid credentials. Incorrect password.',
-            }),
-          );
-        }
-
-        if (user.status !== 'ACTIVE') {
-          throw new Error(
-            JSON.stringify({
-              code: 403,
-              message: 'Account not activated. Please verify your email.',
-            }),
-          );
-        }
-
-        // Update `lastSignInAt` field
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { lastSignInAt: new Date() },
-        });
-
-        return {
-          id: user.id,
-          status: user.status,
-          email: user.email,
-          name: user.name || 'Anonymous',
-          roleId: user.roleId,
-          avatar: user.avatar,
-        };
       },
     }),
     GoogleProvider({
@@ -183,6 +165,7 @@ const authOptions: NextAuthOptions = {
           token.status = user.status;
           token.roleId = user.roleId;
           token.roleName = role?.name;
+          token.accessToken = (user as any).accessToken;
         }
       }
 
@@ -197,6 +180,7 @@ const authOptions: NextAuthOptions = {
         session.user.status = token.status;
         session.user.roleId = token.roleId;
         session.user.roleName = token.roleName;
+        session.user.accessToken = token.accessToken;
       }
       return session;
     },
