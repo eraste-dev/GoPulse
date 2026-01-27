@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Base de données pour le dev (isolée de la prod/test)
+  db:
+    image: postgres:16-alpine
+    container_name: monitoring-db-dev
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:5432"
+    networks:
+      - monitoring-net-dev
+
+  # Dashboard Next.js en mode dev avec hot-reload
+  web:
+    build:
+      context: ../dashboard
+      dockerfile: ../docker/dev/Dockerfile
+    container_name: monitoring-web-dev
+    volumes:
+      # Montage du code source local vers le conteneur
+      - ../dashboard:/app
+      # Isolation des node_modules du conteneur
+      - /app/node_modules
+    ports:
+      - "${WEB_PORT}:3000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      # Force le polling pour garantir le fonctionnement du hot-reload sur tous les OS
+      - WATCHPACK_POLLING=true
+    command: sh -c "npx prisma generate && npm run dev"
+    depends_on:
+      - db
+    networks:
+      - monitoring-net-dev
+
+  # API Backend (NestJS) en mode dev
+  api:
+    build:
+      context: ../backend
+      dockerfile: ../docker/dev/nest.Dockerfile
+    container_name: monitoring-api-dev
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+    ports:
+      - "${API_PORT}:3000"
+    command: sh -c "npx prisma generate && npm run start:dev"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      - db
+    networks:
+      - monitoring-net-dev
+
+  # Adminer (Database Viewer)
+  adminer:
+    image: adminer
+    container_name: monitoring-adminer-dev
+    ports:
+      - "${ADMINER_PORT}:8080"
+    depends_on:
+      - db
+    networks:
+      - monitoring-net-dev
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  monitoring-net-dev:

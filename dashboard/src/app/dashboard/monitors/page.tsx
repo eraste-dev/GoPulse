@@ -55,7 +55,7 @@ export default async function MonitorsPage() {
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "p-2.5 rounded-xl transition-colors",
-                    isUp ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
+                    isUp ? "bg-blue-500/10 text-blue-500" : "bg-red-500/10 text-red-500"
                   )}>
                     <Globe className="w-5 h-5" />
                   </div>
@@ -76,7 +76,7 @@ export default async function MonitorsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {isUp ? (
-                      <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20 rounded-lg gap-1 px-2 py-0.5">
+                      <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/20 rounded-lg gap-1 px-2 py-0.5">
                         <Wifi className="w-3 h-3" /> En ligne
                       </Badge>
                     ) : (

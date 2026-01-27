@@ -1,48 +1,44 @@
 # GoPulse Makefile
+include .env
+export $(shell sed 's/=.*//' .env)
+
 # Configuration
 BINARY_NAME=monitor-app
 CONFIG_FILE=config.json
 LOG_FILE=monitoring.log
 
-# Default target
+# Selection du fichier Docker Compose en fonction de APP_ENV
+COMPOSE_FILE=docker/docker-compose.yml
+ifeq ($(APP_ENV),dev)
+	COMPOSE_FILE=docker/docker-compose.dev.yml
+endif
+
 .DEFAULT_GOAL := help
 
-.PHONY: help up down logs db-init agent-build agent-run clean
+.PHONY: help start stop logs agent clean db-init
 
-## -- APP STACK (Docker) --
+## -- COMMANDES PRINCIPALES --
 
-## Démarrer toute la solution (Dashboard + Agent + DB)
-up:
-	@echo "🚀 Démarrage de la stack GoPulse..."
-	docker compose up --build -d
-	@echo "✅ Dashboard accessible sur http://localhost:3000"
+## Démarrer l'application (en fonction de APP_ENV)
+start:
+	@echo "🚀 Démarrage de GoPulse en mode [$(APP_ENV)]..."
+	docker compose -f $(COMPOSE_FILE) up --build -d
+	@echo "✅ Application accessible sur http://localhost:$(WEB_PORT)"
 
-## Arrêter toute la solution
-down:
-	@echo "🛑 Arrêt de la stack..."
-	docker compose down
+## Arrêter l'application
+stop:
+	@echo "🛑 Arrêt de l'application..."
+	docker compose -f $(COMPOSE_FILE) down
 
-## Voir les journaux (logs) en temps réel
+## Voir les journaux (logs)
 logs:
-	docker compose logs -f
+	docker compose -f $(COMPOSE_FILE) logs -f
 
-## Initialiser ou mettre à jour la base de données
-db-init:
-	@echo "📦 Initialisation de la base de données..."
-	docker compose exec web npx prisma@5 db push
-
-## -- AGENT LOCAL (Go) --
-
-## Compiler l'agent de monitoring uniquement
-agent-build:
-	@echo "🔨 Compilation de l'agent..."
-	go build -o $(BINARY_NAME)
-	@echo "✅ Terminé : ./$(BINARY_NAME)"
-
-## Lancer l'agent de monitoring localement
-agent-run: agent-build
-	@echo "📡 Lancement de l'agent..."
-	./$(BINARY_NAME) $(CONFIG_FILE)
+## Lancer l'agent de monitoring local (Go)
+agent:
+	@echo "📡 Lancement de l'agent local..."
+	@go build -o $(BINARY_NAME)
+	@./$(BINARY_NAME) $(CONFIG_FILE)
 
 ## -- UTILS --
 
@@ -53,10 +49,17 @@ clean:
 	rm -f $(LOG_FILE)
 	@echo "✨ Projet propre."
 
+## Initialiser la base de données
+db-init:
+	@echo "📦 Initialisation de la base de données..."
+	docker compose -f $(COMPOSE_FILE) exec web npx prisma@5 db push
+
 ## Afficher cette aide
 help:
 	@echo "-----------------------------------------------------------------------"
-	@echo "                     🌐 GOPULSE - COMMAND CENTER"
+	@echo "                     🌐 GOPULSE - MONITORING"
+	@echo "-----------------------------------------------------------------------"
+	@echo " Mode actuel : \033[32m$(APP_ENV)\033[0m (Port Web: $(WEB_PORT), Port DB: $(DB_PORT))"
 	@echo "-----------------------------------------------------------------------"
 	@echo ""
 	@awk '/^[a-zA-Z\-\_0-9]+:/ { \
@@ -69,4 +72,3 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 	@echo ""
-	@echo "-----------------------------------------------------------------------"

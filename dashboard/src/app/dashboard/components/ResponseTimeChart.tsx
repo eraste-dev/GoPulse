@@ -23,45 +23,46 @@ export default function ResponseTimeChart({ data }: { data: any[] }) {
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorMs" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#16db65" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#16db65" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#0070f3" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#0070f3" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
           <XAxis 
             dataKey="time" 
-            stroke="#64748b" 
+            stroke="#6b7280" 
             fontSize={12} 
             tickLine={false} 
             axisLine={false} 
-            tick={{ fill: '#64748b' }}
+            tick={{ fill: '#6b7280' }}
           />
           <YAxis 
-            stroke="#64748b" 
+            stroke="#6b7280" 
             fontSize={12} 
             tickLine={false} 
             axisLine={false} 
-            tick={{ fill: '#64748b' }}
+            tick={{ fill: '#6b7280' }}
             tickFormatter={(value) => `${value}ms`} 
           />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: "#0d2818", 
-              border: "1px solid #04471c", 
+              backgroundColor: "#ffffff", 
+              border: "1px solid #e5e7eb", 
               borderRadius: "12px",
-              color: "#fff" 
+              color: "#111827",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
             }}
-            itemStyle={{ color: "#16db65" }}
-            cursor={{ stroke: '#058c42', strokeWidth: 2 }}
+            itemStyle={{ color: "#0070f3" }}
+            cursor={{ stroke: '#0070f3', strokeWidth: 2 }}
           />
           <Area 
             type="monotone" 
             dataKey="ms" 
-            stroke="#16db65" 
+            stroke="#0070f3" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorMs)" 
-            activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
+            activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2, strokeOpacity: 1, fill: '#0070f3' }}
           />
         </AreaChart>
       </ResponsiveContainer>

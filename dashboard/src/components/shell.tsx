@@ -109,7 +109,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md border-b border-border z-30">
+        <header className="h-16 flex items-center justify-between px-6 bg-card border-b border-border z-30">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
