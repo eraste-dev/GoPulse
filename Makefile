@@ -49,10 +49,23 @@ clean:
 	rm -f $(LOG_FILE)
 	@echo "✨ Projet propre."
 
-## Initialiser la base de données
+# Initialise la DB (Prisma Push)
 db-init:
 	@echo "📦 Initialisation de la base de données..."
-	docker compose -f $(COMPOSE_FILE) exec web npx prisma@5 db push
+	docker compose -f $(COMPOSE_FILE) exec api npx prisma db push
+
+# Seed la DB (Données de test)
+seed:
+	@echo "🌱 Remplissage de la base de données..."
+	docker compose -f $(COMPOSE_FILE) exec api npx prisma db seed
+
+# Nettoyer tout (Volumes inclus)
+clean:
+	@echo "🧹 Nettoyage..."
+	rm -f $(BINARY_NAME)
+	rm -f $(LOG_FILE)
+	docker compose -f $(COMPOSE_FILE) down -v
+	@echo "✨ Projet propre."
 
 ## Afficher cette aide
 help:

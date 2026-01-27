@@ -1,10 +1,13 @@
 
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { MonitorsService } from './monitors.service';
 import { CreateMonitorDto } from './dto/create-monitor.dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('monitors')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('monitors')
 export class MonitorsController {
     constructor(private readonly monitorsService: MonitorsService) { }
