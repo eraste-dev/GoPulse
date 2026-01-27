@@ -7,7 +7,7 @@ RUN apk add --no-cache openssl
 
 # Installation des dépendances pour le développement
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Le code source sera monté via un volume pour le hot-reload,
 # donc pas de COPY . . ici pour éviter de masquer le volume.

@@ -1,23 +1,66 @@
-# GoPulse Dashboard (Frontend & API)
+# Metronic 9 | All-in-One Tailwind based HTML/React/Next.js Template for Modern Web Applications
 
-Ce dossier contient l'interface web de monitoring et l'API de réception des données.
+## Getting Started
 
-## Stack Technique
-- **Framework** : Next.js 16 (App Router)
-- **Langage** : TypeScript
-- **Style** : Tailwind CSS + Shadcn UI
-- **Base de données** : PostgreSQL via Prisma ORM
-- **Authentification** : NextAuth.js (Provider Credentials)
-- **Graphiques** : Recharts
+The official [Metronic Next.js Documentation](https://docs.keenthemes.com/metronic-nextjs) will be released soon,
+alongside the stable Metronic release, expected within the next week.
 
-## Structure
-- `/src/app/api/report` : Point d'entrée Webhook pour l'agent.
-- `/src/app/dashboard` : Page principale de visualisation des métriques.
-- `/src/app/login` : Page d'authentification.
-- `/prisma` : Schéma de la base de données.
+### Prerequisites
 
-## Développement Local
-1. `npm install`
-2. Configurez `DATABASE_URL` dans un fichier `.env`.
-3. `npx prisma db push`
-4. `npm run dev`
+- Node.js 16.x or higher
+- Npm or Yarn
+- Tailwind CSS 4.x
+- React 19.x
+- Next.js 15.3.x
+- PostgreSQL 17.4.x
+
+## ReUI Components
+
+Metronic now leverages [ReUI](https://reui.io), our open-source React component library.
+
+Star the [ReUI on GitHub](https://github.com/keenthemes/reui) to help us grow the project and stay updated on new features!
+
+### Installation
+
+To set up the project dependencies, including those required for React 19, use the `--force` flag to resolve any dependency conflicts:
+
+```bash
+npm install --force
+```
+
+### Database Deployment
+
+This will create the necessary tables in database for user authorization and user management apps :
+
+```bash
+npx prisma db push
+```
+
+Once your schema is deployed, you need to generate the Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+### Development
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+### Setting Up the Demo Layout
+
+Open `app/(protected)/layout.tsx` and change `Demo1Layout` to any demo, for example, `Demo5Layout` and you will switch entire app layout to the selected demo.
+
+```bash
+<Demo5Layout>
+	{children}
+</Demo5Layout>
+```
+
+### Reporting Issues
+
+If you encounter any issues or have suggestions for improvement, please contact us at [support@keenthemes.com](mailto:support@keenthemes.com).
+Include a detailed description of the issue or suggestion, and we will work to address it in the next stable release.

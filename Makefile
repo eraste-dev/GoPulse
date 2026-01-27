@@ -31,8 +31,26 @@ stop:
 	docker compose -f $(COMPOSE_FILE) down
 
 ## Voir les journaux (logs)
+## Voir les logs (Global)
 logs:
 	docker compose -f $(COMPOSE_FILE) logs -f
+
+## Logs Dashboard (Web)
+logs-dashboard:
+	docker compose -f $(COMPOSE_FILE) logs -f web
+
+## Logs API
+logs-api:
+	docker compose -f $(COMPOSE_FILE) logs -f api
+
+## Logs Database
+logs-db:
+	docker compose -f $(COMPOSE_FILE) logs -f db
+
+## Logs Agent
+logs-agent:
+	docker compose -f $(COMPOSE_FILE) logs -f agent
+
 
 ## Lancer l'agent de monitoring local (Go)
 agent:
@@ -43,11 +61,7 @@ agent:
 ## -- UTILS --
 
 ## Nettoyer le projet (supprimer binaire et logs)
-clean:
-	@echo "🧹 Nettoyage..."
-	rm -f $(BINARY_NAME)
-	rm -f $(LOG_FILE)
-	@echo "✨ Projet propre."
+
 
 # Initialise la DB (Prisma Push)
 db-init:
