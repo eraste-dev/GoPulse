@@ -20,7 +20,7 @@ services:
   web:
     build: 
       context: ./dashboard
-      dockerfile: Dockerfile
+      dockerfile: ../docker/web.Dockerfile
     container_name: monitoring-web
     ports:
       - "3000:3000"
@@ -37,7 +37,7 @@ services:
   agent:
     build:
       context: .
-      dockerfile: Dockerfile.agent
+      dockerfile: docker/agent.Dockerfile
     container_name: monitoring-agent
     volumes:
       - ./config.json:/app/config.json
