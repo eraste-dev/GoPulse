@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
-import { MENU_SIDEBAR, MENU_SIDEBAR_CUSTOM } from '@/config/menu.config';
+import { getMenuChildrenForPath } from '@/config/menu.utils';
 import { MenuConfig } from '@/config/types';
 import { cn } from '@/lib/utils';
 import { useMenu } from '@/hooks/use-menu';
@@ -20,22 +20,7 @@ import {
 
 export function NavbarMenu() {
   const pathname = usePathname();
-  let navbarMenu;
-
-  if (pathname.includes('/public-profile/')) {
-    navbarMenu = MENU_SIDEBAR?.[2];
-  } else if (pathname.includes('/network/')) {
-    navbarMenu = MENU_SIDEBAR?.[4];
-  } else if (pathname.includes('/store-client/')) {
-    navbarMenu = MENU_SIDEBAR_CUSTOM?.[0];
-  } else if (pathname.includes('/authentication/')) {
-    navbarMenu = MENU_SIDEBAR?.[5];
-  } else if (pathname.includes('/user-management/')) {
-    navbarMenu = MENU_SIDEBAR?.[7];
-  } else {
-    navbarMenu = MENU_SIDEBAR?.[3];
-  }
-
+  const menuChildren = getMenuChildrenForPath(pathname);
   const { isActive, hasActiveChild } = useMenu(pathname);
 
   const buildMenu = (items?: MenuConfig) => {
@@ -127,7 +112,7 @@ export function NavbarMenu() {
     <div className="grid">
       <div className="kt-scrollable-x-auto flex items-stretch">
         <Menubar className="space-x-0 flex items-stretch border-none bg-transparent gap-5 p-0 h-auto">
-          {buildMenu(navbarMenu?.children as MenuConfig)}
+          {buildMenu(menuChildren)}
         </Menubar>
       </div>
     </div>

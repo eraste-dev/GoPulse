@@ -11,7 +11,8 @@ import {
   User,
   Users,
 } from 'lucide-react';
-import { MENU_HELP, MENU_SIDEBAR } from '@/config/menu.config';
+import { MENU_HELP } from '@/config/menu.config';
+import { findMenuByTitle } from '@/config/menu.utils';
 import { MenuConfig } from '@/config/types';
 import { cn } from '@/lib/utils';
 import { useMenu } from '@/hooks/use-menu';
@@ -41,27 +42,27 @@ export function SidebarMenu() {
     {
       title: 'Profiles',
       icon: User,
-      children: MENU_SIDEBAR?.[2].children,
+      children: findMenuByTitle('Public Profile')?.children,
     },
     {
       title: 'Account',
       icon: Settings,
-      children: MENU_SIDEBAR?.[3].children,
+      children: findMenuByTitle('My Account')?.children,
     },
     {
       title: 'Users',
       icon: ShieldUser,
-      children: MENU_SIDEBAR?.[7].children,
+      children: findMenuByTitle('User Management')?.children,
     },
     {
       title: 'Store',
       icon: ShoppingCart,
-      children: MENU_SIDEBAR?.[8].children,
+      children: findMenuByTitle('Store - Client')?.children,
     },
     {
       title: 'Network',
       icon: Users,
-      children: MENU_SIDEBAR?.[4].children,
+      children: findMenuByTitle('Network')?.children,
     },
     {
       title: 'Help',
