@@ -69,9 +69,6 @@ export const MENU_SIDEBAR: MenuConfig = [
     title: 'Monitors',
     icon: Activity,
     path: '/monitors',
-    children: [
-      { title: 'List', path: '/monitors' },
-    ],
   },
   { heading: 'User' },
   {

@@ -52,10 +52,44 @@
     "data_not_found": "Requested data not found.",
     "delete_restricted_error": "Unable to delete this record because it is linked to other records."
   },
+  "dashboard": {
+    "title": "Monitoring Dashboard",
+    "subtitle": "Real-time overview of your infrastructure health.",
+    "stats": {
+      "uptime": "Global Uptime",
+      "monitors_down": "Monitors Down",
+      "avg_response": "Avg. Response Time",
+      "total_monitors": "Total Monitors"
+    },
+    "charts": {
+      "uptime_title": "Uptime & Response Time",
+      "uptime_description": "Monitor performance over time",
+      "last_24h": "Last 24 hours",
+      "last_7d": "Last 7 days"
+    },
+    "period": {
+      "24h": "24 Hours",
+      "7d": "7 Days"
+    },
+    "realtime": "Real-time",
+    "refresh": "Refresh"
+  },
   "monitors": {
     "title": "Monitors",
     "subtitle": "Manage your website monitors and view their status.",
     "add_monitor": "Add Monitor",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "list": "List"
+    },
+    "list": {
+      "title": "All Monitors",
+      "description": "View and manage all your configured monitors."
+    },
+    "actions": {
+      "copy_url": "Copy URL",
+      "view_details": "View Details"
+    },
     "table": {
       "url_name": "URL / Name",
       "status": "Status",

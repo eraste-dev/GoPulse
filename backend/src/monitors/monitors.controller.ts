@@ -1,20 +1,30 @@
 
-import { Controller, Get, Post, Body, Param, UseGuards, Patch, Delete, Request, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Patch, Delete, Request, NotFoundException, Query } from '@nestjs/common';
 import { MonitorsService } from './monitors.service';
 import { CreateMonitorDto } from './dto/create-monitor.dto';
 import { UpdateMonitorDto } from './dto/update-monitor.dto';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('monitors')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('monitors')
-@ApiTags('monitors')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class MonitorsController {
     constructor(private readonly monitorsService: MonitorsService) { }
+
+    @Get('dashboard/stats')
+    @ApiOperation({ summary: 'Get dashboard statistics' })
+    getDashboardStats() {
+        return this.monitorsService.getDashboardStats();
+    }
+
+    @Get('dashboard/history')
+    @ApiOperation({ summary: 'Get uptime history for charts' })
+    @ApiQuery({ name: 'period', enum: ['24h', '7d'], required: false })
+    getUptimeHistory(@Query('period') period: '24h' | '7d' = '24h') {
+        return this.monitorsService.getUptimeHistory(period);
+    }
 
     @Post()
     @ApiOperation({ summary: 'Create a new monitor' })

@@ -92,6 +92,19 @@ export declare class MonitorsService {
         updatedAt: Date;
         userId: string;
     } | null>;
+    getDashboardStats(): Promise<{
+        totalMonitors: number;
+        activeMonitors: number;
+        downMonitors: number;
+        uptimePercentage: number;
+        avgResponseTime: number;
+    }>;
+    getUptimeHistory(period?: '24h' | '7d'): Promise<{
+        timestamp: string;
+        uptime: number;
+        avgResponseTime: number;
+        totalChecks: number;
+    }[]>;
     checkConnectivity(url: string, timeout?: number): Promise<{
         up: boolean;
         status: number;

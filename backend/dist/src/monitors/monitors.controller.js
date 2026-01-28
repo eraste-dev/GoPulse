@@ -24,6 +24,12 @@ let MonitorsController = class MonitorsController {
     constructor(monitorsService) {
         this.monitorsService = monitorsService;
     }
+    getDashboardStats() {
+        return this.monitorsService.getDashboardStats();
+    }
+    getUptimeHistory(period = '24h') {
+        return this.monitorsService.getUptimeHistory(period);
+    }
     create(createMonitorDto, req) {
         return this.monitorsService.create(createMonitorDto, req.user?.id);
     }
@@ -52,6 +58,22 @@ let MonitorsController = class MonitorsController {
     }
 };
 exports.MonitorsController = MonitorsController;
+__decorate([
+    (0, common_1.Get)('dashboard/stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get dashboard statistics' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MonitorsController.prototype, "getDashboardStats", null);
+__decorate([
+    (0, common_1.Get)('dashboard/history'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get uptime history for charts' }),
+    (0, swagger_1.ApiQuery)({ name: 'period', enum: ['24h', '7d'], required: false }),
+    __param(0, (0, common_1.Query)('period')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MonitorsController.prototype, "getUptimeHistory", null);
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new monitor' }),
@@ -106,9 +128,6 @@ exports.MonitorsController = MonitorsController = __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('monitors'),
-    (0, swagger_1.ApiTags)('monitors'),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [monitors_service_1.MonitorsService])
 ], MonitorsController);
 //# sourceMappingURL=monitors.controller.js.map
