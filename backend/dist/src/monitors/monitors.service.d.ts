@@ -105,6 +105,12 @@ export declare class MonitorsService {
         avgResponseTime: number;
         totalChecks: number;
     }[]>;
+    getMonitorHistory(monitorId: string, period?: '24h' | '7d' | '30d'): Promise<{
+        timestamp: string;
+        responseTime: number;
+        status: string;
+        statusCode: number;
+    }[]>;
     checkConnectivity(url: string, timeout?: number): Promise<{
         up: boolean;
         status: number;

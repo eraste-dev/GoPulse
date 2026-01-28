@@ -23,7 +23,8 @@
       "loading": "Loading...",
       "error": "An error occurred",
       "success": "Operation completed successfully",
-      "confirm": "Are you sure?"
+      "confirm": "Are you sure?",
+      "coming_soon": "Coming soon!"
     }
   },
   "pages": {
@@ -133,6 +134,66 @@
       "advanced": "Advanced Settings",
       "regions": "Check Regions",
       "success": "Monitor created successfully"
+    },
+    "edit": {
+      "title": "Edit Monitor",
+      "description": "Update monitor settings and configuration.",
+      "success": "Monitor updated successfully"
+    },
+    "detail": {
+      "back_to_list": "Back to monitors",
+      "not_found": "Monitor not found",
+      "method": "Method",
+      "interval": "Interval",
+      "timeout": "Timeout",
+      "threshold": "Threshold",
+      "failures": "failures",
+      "regions": "Regions",
+      "expected_status": "Expected Status",
+      "configuration": "Configuration",
+      "response_time": "Response Time",
+      "status_code": "Status Code",
+      "created": "Created",
+      "last_check": "Last Check",
+      "edit_settings": "Edit Settings",
+      "uptime": "Uptime",
+      "avg_response": "Avg Response",
+      "min_response": "Min Response",
+      "max_response": "Max Response",
+      "period": {
+        "24h": "24 Hours",
+        "7d": "7 Days",
+        "30d": "30 Days"
+      },
+      "charts": {
+        "response_time": "Response Time",
+        "response_time_desc": "Monitor latency over time",
+        "status_history": "Status History",
+        "status_history_desc": "Uptime overview for the selected period",
+        "drag_to_zoom": "Drag to zoom"
+      },
+      "checks": "checks",
+      "export": {
+        "title": "Export",
+        "csv": "Export as CSV",
+        "json": "Export as JSON",
+        "success": "Report exported successfully"
+      },
+      "promo": {
+        "title": "Optimize Your Monitoring",
+        "description": "Learn how to set up alerts and get notified when your services go down.",
+        "cta": "Read Documentation"
+      },
+      "tutorial": {
+        "title": "Getting Started Guide",
+        "description": "New to monitoring? Check out our tutorials to get the most out of GoPulse.",
+        "cta": "View Tutorials"
+      },
+      "feature": {
+        "title": "Coming Soon: Advanced Analytics",
+        "description": "Get deeper insights with custom dashboards, SLA reports, and predictive alerts.",
+        "cta": "Learn More"
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Plus, LayoutDashboard, List } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,8 +14,26 @@ import { MonitorsDashboard } from './_components/monitors-dashboard';
 export default function MonitorsPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'list'>('dashboard');
+
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'list'>(
+    tabParam === 'list' ? 'list' : 'dashboard'
+  );
+
+  // Sync tab state with URL param
+  useEffect(() => {
+    if (tabParam === 'list' || tabParam === 'dashboard') {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab as 'dashboard' | 'list');
+    router.replace(`/monitors?tab=${tab}`, { scroll: false });
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -33,7 +52,7 @@ export default function MonitorsPage() {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'dashboard' | 'list')}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <LayoutDashboard className="h-4 w-4" />

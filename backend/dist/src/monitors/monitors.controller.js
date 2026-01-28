@@ -39,6 +39,9 @@ let MonitorsController = class MonitorsController {
     findOne(id) {
         return this.monitorsService.findOne(id);
     }
+    getMonitorHistory(id, period = '24h') {
+        return this.monitorsService.getMonitorHistory(id, period);
+    }
     async update(id, updateMonitorDto) {
         const monitor = await this.monitorsService.update(id, updateMonitorDto);
         if (!monitor) {
@@ -98,6 +101,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MonitorsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)(':id/history'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get monitor history' }),
+    (0, swagger_1.ApiQuery)({ name: 'period', enum: ['24h', '7d', '30d'], required: false }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)('period')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], MonitorsController.prototype, "getMonitorHistory", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a monitor' }),

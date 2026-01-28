@@ -151,6 +151,33 @@ let MonitorsService = class MonitorsService {
             .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
         return history;
     }
+    async getMonitorHistory(monitorId, period = '24h') {
+        const now = new Date();
+        let startDate;
+        switch (period) {
+            case '7d':
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                break;
+            case '30d':
+                startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                break;
+            default:
+                startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        }
+        const reports = await this.prisma.pingReport.findMany({
+            where: {
+                monitorId,
+                timestamp: { gte: startDate },
+            },
+            orderBy: { timestamp: 'asc' },
+        });
+        return reports.map((report) => ({
+            timestamp: report.timestamp.toISOString(),
+            responseTime: report.responseTime,
+            status: report.status,
+            statusCode: report.statusCode,
+        }));
+    }
     async checkConnectivity(url, timeout = 5000) {
         const start = Date.now();
         const controller = new AbortController();

@@ -72,6 +72,12 @@ export declare class MonitorsController {
         createdAt: Date;
         updatedAt: Date;
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs>;
+    getMonitorHistory(id: string, period?: '24h' | '7d' | '30d'): Promise<{
+        timestamp: string;
+        responseTime: number;
+        status: string;
+        statusCode: number;
+    }[]>;
     update(id: string, updateMonitorDto: UpdateMonitorDto): Promise<{
         id: string;
         name: string;

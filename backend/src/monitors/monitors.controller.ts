@@ -45,6 +45,16 @@ export class MonitorsController {
         return this.monitorsService.findOne(id);
     }
 
+    @Get(':id/history')
+    @ApiOperation({ summary: 'Get monitor history' })
+    @ApiQuery({ name: 'period', enum: ['24h', '7d', '30d'], required: false })
+    getMonitorHistory(
+        @Param('id') id: string,
+        @Query('period') period: '24h' | '7d' | '30d' = '24h'
+    ) {
+        return this.monitorsService.getMonitorHistory(id, period);
+    }
+
     @Patch(':id')
     @ApiOperation({ summary: 'Update a monitor' })
     async update(@Param('id') id: string, @Body() updateMonitorDto: UpdateMonitorDto) {

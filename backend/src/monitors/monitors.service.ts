@@ -203,6 +203,43 @@ export class MonitorsService {
     }
 
     /**
+     * Get history for a specific monitor.
+     * @param monitorId Monitor UUID
+     * @param period '24h' | '7d' | '30d' - Time period for history
+     * @returns Array of history data points
+     */
+    async getMonitorHistory(monitorId: string, period: '24h' | '7d' | '30d' = '24h') {
+        const now = new Date();
+        let startDate: Date;
+
+        switch (period) {
+            case '7d':
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                break;
+            case '30d':
+                startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                break;
+            default:
+                startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        }
+
+        const reports = await this.prisma.pingReport.findMany({
+            where: {
+                monitorId,
+                timestamp: { gte: startDate },
+            },
+            orderBy: { timestamp: 'asc' },
+        });
+
+        return reports.map((report) => ({
+            timestamp: report.timestamp.toISOString(),
+            responseTime: report.responseTime,
+            status: report.status,
+            statusCode: report.statusCode,
+        }));
+    }
+
+    /**
      * Test connectivity to a URL.
      * @param url The URL to test
      * @param timeout Timeout in ms
