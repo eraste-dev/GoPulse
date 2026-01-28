@@ -2,10 +2,8 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import {
-  Globe,
   Clock,
   AlertTriangle,
-  CheckCircle,
   Pause,
   Play,
   Settings,
@@ -14,6 +12,7 @@ import {
   MapPin,
   Timer,
   Activity,
+  MoreVertical,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -22,10 +21,16 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 
 export interface Monitor {
@@ -64,35 +69,17 @@ export function MonitorDetailCard({
   const { t } = useTranslation();
 
   const statusConfig = {
-    UP: {
-      label: t('monitors.status.up'),
-      icon: CheckCircle,
-      className: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20',
-    },
-    DOWN: {
-      label: t('monitors.status.down'),
-      icon: AlertTriangle,
-      className: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20',
-    },
-    PAUSED: {
-      label: t('monitors.status.paused'),
-      icon: Pause,
-      className: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20',
-    },
+    UP: { label: t('monitors.status.up') },
+    DOWN: { label: t('monitors.status.down') },
+    PAUSED: { label: t('monitors.status.paused') },
   };
 
   const currentStatus = !monitor.isActive
     ? 'PAUSED'
     : monitor.lastStatus || 'UP';
   const status = statusConfig[currentStatus];
-  const StatusIcon = status.icon;
 
   const details = [
-    {
-      icon: Globe,
-      label: t('monitors.detail.method'),
-      value: monitor.method,
-    },
     {
       icon: Timer,
       label: t('monitors.detail.interval'),
@@ -120,28 +107,87 @@ export function MonitorDetailCard({
     },
   ];
 
+  const statusDotColor = {
+    UP: 'bg-green-500',
+    DOWN: 'bg-red-500',
+    PAUSED: 'bg-yellow-500',
+  };
+
   return (
     <Card className="h-fit">
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg truncate">{monitor.name}</CardTitle>
-            <CardDescription className="flex items-center gap-1 mt-1">
-              <a
-                href={monitor.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="truncate hover:underline flex items-center gap-1"
-              >
-                {monitor.url}
-                <ExternalLink className="h-3 w-3 shrink-0" />
-              </a>
-            </CardDescription>
+      <CardHeader className="pb-3">
+        {/* Top row: Status + Actions */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              {currentStatus === 'UP' && (
+                <span className={cn('animate-ping absolute inline-flex h-full w-full rounded-full opacity-75', statusDotColor[currentStatus])} />
+              )}
+              <span className={cn('relative inline-flex rounded-full h-2.5 w-2.5', statusDotColor[currentStatus])} />
+            </span>
+            <span className={cn(
+              'text-sm font-medium',
+              currentStatus === 'UP' && 'text-green-600 dark:text-green-400',
+              currentStatus === 'DOWN' && 'text-red-600 dark:text-red-400',
+              currentStatus === 'PAUSED' && 'text-yellow-600 dark:text-yellow-400'
+            )}>
+              {status.label}
+            </span>
           </div>
-          <Badge variant="outline" className={cn('shrink-0', status.className)}>
-            <StatusIcon className="h-3 w-3 mr-1" />
-            {status.label}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2">
+                <MoreVertical className="h-4 w-4" />
+                <span className="sr-only">Actions</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onToggleActive} disabled={isToggling}>
+                {monitor.isActive ? (
+                  <>
+                    <Pause className="h-4 w-4 mr-2" />
+                    {t('monitors.status.pause')}
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    {t('monitors.status.resume')}
+                  </>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onEdit}>
+                <Settings className="h-4 w-4 mr-2" />
+                {t('monitors.detail.edit_settings')}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={onDelete}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t('common.buttons.delete')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Title */}
+        <CardTitle className="text-xl font-semibold truncate">{monitor.name}</CardTitle>
+
+        {/* URL with method badge */}
+        <div className="flex items-center gap-2 mt-2">
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 font-mono shrink-0">
+            {monitor.method}
           </Badge>
+          <a
+            href={monitor.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground truncate hover:text-foreground hover:underline transition-colors flex items-center gap-1 group"
+          >
+            <span className="truncate">{monitor.url.replace(/^https?:\/\//, '')}</span>
+            <ExternalLink className="h-3 w-3 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </a>
         </div>
       </CardHeader>
 
@@ -198,45 +244,6 @@ export function MonitorDetailCard({
           </div>
         </div>
 
-        <Separator />
-
-        {/* Actions */}
-        <div className="flex flex-col gap-2">
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            onClick={onToggleActive}
-            disabled={isToggling}
-          >
-            {monitor.isActive ? (
-              <>
-                <Pause className="h-4 w-4 mr-2" />
-                {t('monitors.status.pause')}
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4 mr-2" />
-                {t('monitors.status.resume')}
-              </>
-            )}
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            onClick={onEdit}
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            {t('monitors.detail.edit_settings')}
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-start text-destructive hover:text-destructive"
-            onClick={onDelete}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            {t('common.buttons.delete')}
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );

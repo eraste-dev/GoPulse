@@ -6,7 +6,6 @@ import {
   AreaChart,
   Bar,
   BarChart,
-  Brush,
   CartesianGrid,
   ResponsiveContainer,
   XAxis,
@@ -14,7 +13,7 @@ import {
   Cell,
   ReferenceLine,
 } from 'recharts';
-import { RefreshCw, Download, ZoomIn, FileDown } from 'lucide-react';
+import { RefreshCw, Download, FileDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
   ChartContainer,
@@ -242,10 +241,6 @@ export function MonitorDetailCharts({
               <CardTitle className="text-base">{t('monitors.detail.charts.response_time')}</CardTitle>
               <CardDescription className="text-xs">{t('monitors.detail.charts.response_time_desc')}</CardDescription>
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <ZoomIn className="h-3 w-3" />
-              {t('monitors.detail.charts.drag_to_zoom')}
-            </div>
           </div>
         </CardHeader>
         <CardContent className="pb-2">
@@ -292,13 +287,6 @@ export function MonitorDetailCharts({
                   stroke="var(--color-responseTime)"
                   fill="url(#fillResponseTime)"
                   strokeWidth={2}
-                />
-                <Brush
-                  dataKey="time"
-                  height={30}
-                  stroke="hsl(var(--muted-foreground))"
-                  fill="hsl(var(--muted))"
-                  travellerWidth={8}
                 />
               </AreaChart>
             </ResponsiveContainer>
