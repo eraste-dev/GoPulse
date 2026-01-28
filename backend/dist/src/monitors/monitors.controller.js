@@ -33,11 +33,19 @@ let MonitorsController = class MonitorsController {
     findOne(id) {
         return this.monitorsService.findOne(id);
     }
-    update(id, updateMonitorDto) {
-        return this.monitorsService.update(id, updateMonitorDto);
+    async update(id, updateMonitorDto) {
+        const monitor = await this.monitorsService.update(id, updateMonitorDto);
+        if (!monitor) {
+            throw new common_1.NotFoundException(`Monitor with ID ${id} not found`);
+        }
+        return monitor;
     }
-    remove(id) {
-        return this.monitorsService.remove(id);
+    async remove(id) {
+        const monitor = await this.monitorsService.remove(id);
+        if (!monitor) {
+            throw new common_1.NotFoundException(`Monitor with ID ${id} not found`);
+        }
+        return monitor;
     }
     testConnectivity(url) {
         return this.monitorsService.checkConnectivity(url);
@@ -75,7 +83,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_monitor_dto_1.UpdateMonitorDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MonitorsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -83,7 +91,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MonitorsController.prototype, "remove", null);
 __decorate([
     (0, common_1.Post)('test-connectivity'),

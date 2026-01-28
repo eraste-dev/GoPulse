@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -33,11 +34,14 @@ import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { CreateMonitorModal } from './_components/create-monitor-modal';
+import { MonitorStats } from './_components/monitor-stats';
+import { ConfirmModal } from '@/components/common/confirm-modal';
 
 export default function MonitorsPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: monitors, isLoading, error } = useQuery({
     queryKey: ['monitors'],
@@ -55,18 +59,46 @@ export default function MonitorsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['monitors'] });
-      toast.success('Monitor deleted successfully');
+      toast.success(t('common.messages.success') || 'Operation completed successfully');
+      setDeleteId(null);
     },
     onError: () => {
-      toast.error('Failed to delete monitor');
+      toast.error(t('common.messages.error') || 'An error occurred');
+      setDeleteId(null);
     },
   });
 
-  const handleDelete = (id: string) => {
-    if (confirm(t('common.messages.confirm') || 'Are you sure?')) {
-      deleteMutation.mutate(id);
+  const toggleActiveMutation = useMutation({
+    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
+      const res = await apiFetch(`/api/monitors/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive }),
+      });
+      if (!res.ok) throw new Error('Failed to update monitor');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['monitors'] });
+      toast.success(t('common.messages.success'));
+    },
+    onError: () => {
+      toast.error(t('common.messages.error'));
+    },
+  });
+
+  const handleDelete = () => {
+    if (deleteId) {
+      deleteMutation.mutate(deleteId);
     }
   };
+
+  const handleToggleActive = (id: string, currentStatus: boolean) => {
+    toggleActiveMutation.mutate({ id, isActive: !currentStatus });
+  };
+
+  const activeMonitors = monitors?.filter((m: any) => m.isActive).length || 0;
+  const downMonitors = 0; 
+  const avgResponse = 120;
 
   if (isLoading) return <div className="p-8 text-center">{t('common.messages.loading')}</div>;
   if (error) return <div className="p-8 text-center text-red-500">{t('common.messages.error')}</div>;
@@ -84,11 +116,18 @@ export default function MonitorsPage() {
         </Button>
       </div>
 
+      <MonitorStats 
+        total={monitors?.length || 0}
+        active={activeMonitors}
+        down={downMonitors}
+        avgResponseTime={avgResponse}
+      />
+
       <Card>
         <CardHeader>
-          <CardTitle>Website Inventory</CardTitle>
+          <CardTitle>{t('monitors.title')}</CardTitle>
           <CardDescription>
-             A list of all your monitored websites and their current status.
+             {t('monitors.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -121,9 +160,9 @@ export default function MonitorsPage() {
                     </TableCell>
                     <TableCell>
                       {monitor.isActive === false ? (
-                         <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Paused</Badge>
+                         <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">{t('monitors.status.paused')}</Badge>
                       ) : (
-                         <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Up</Badge>
+                         <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">{t('monitors.status.up')}</Badge>
                       )}
                     </TableCell>
                     <TableCell>
@@ -149,15 +188,18 @@ export default function MonitorsPage() {
                             Copy URL
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          {/* Details page link remains for now, could be modal later */}
                           <DropdownMenuItem asChild>
                               <Link href={`/monitors/${monitor.id}`}>View Details</Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem disabled>
-                             <Pause className="mr-2 h-4 w-4" /> Pause
+                          <DropdownMenuItem onClick={() => handleToggleActive(monitor.id, monitor.isActive)}>
+                             {monitor.isActive ? (
+                                <><Pause className="mr-2 h-4 w-4" /> {t('monitors.status.pause')}</>
+                             ) : (
+                                <><Play className="mr-2 h-4 w-4" /> {t('monitors.status.resume')}</>
+                             )}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(monitor.id)}>
+                          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteId(monitor.id)}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t('common.buttons.delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -175,6 +217,18 @@ export default function MonitorsPage() {
         open={isCreateModalOpen} 
         onOpenChange={setIsCreateModalOpen} 
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ['monitors'] })}
+      />
+      
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title={t('monitors.confirm_delete.title')}
+        description={t('monitors.confirm_delete.description')}
+        confirmText={t('common.buttons.delete')}
+        cancelText={t('common.buttons.cancel')}
+        variant="destructive"
+        disabled={deleteMutation.isPending}
       />
     </div>
   );

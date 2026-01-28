@@ -65,6 +65,23 @@
       "actions": "Actions",
       "empty": "No monitors found. Create one to get started."
     },
+    "confirm_delete": {
+      "title": "Delete Monitor",
+      "description": "Are you sure you want to delete this monitor? This action cannot be undone."
+    },
+    "status": {
+      "paused": "Paused",
+      "up": "Up",
+      "down": "Down",
+      "resume": "Resume",
+      "pause": "Pause"
+    },
+    "stats": {
+      "total": "Total Monitors",
+      "active": "Active",
+      "down": "Down",
+      "avg_response": "Avg. Response"
+    },
     "create": {
       "title": "Create Monitor",
       "description": "Configure a new website to monitor.",

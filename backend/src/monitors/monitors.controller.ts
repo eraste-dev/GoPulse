@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Body, Param, UseGuards, Patch, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Patch, Delete, Request, NotFoundException } from '@nestjs/common';
 import { MonitorsService } from './monitors.service';
 import { CreateMonitorDto } from './dto/create-monitor.dto';
 import { UpdateMonitorDto } from './dto/update-monitor.dto';
@@ -37,14 +37,22 @@ export class MonitorsController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Update a monitor' })
-    update(@Param('id') id: string, @Body() updateMonitorDto: UpdateMonitorDto) {
-        return this.monitorsService.update(id, updateMonitorDto);
+    async update(@Param('id') id: string, @Body() updateMonitorDto: UpdateMonitorDto) {
+        const monitor = await this.monitorsService.update(id, updateMonitorDto);
+        if (!monitor) {
+            throw new NotFoundException(`Monitor with ID ${id} not found`);
+        }
+        return monitor;
     }
 
     @Delete(':id')
     @ApiOperation({ summary: 'Delete a monitor' })
-    remove(@Param('id') id: string) {
-        return this.monitorsService.remove(id);
+    async remove(@Param('id') id: string) {
+        const monitor = await this.monitorsService.remove(id);
+        if (!monitor) {
+            throw new NotFoundException(`Monitor with ID ${id} not found`);
+        }
+        return monitor;
     }
 
     @Post('test-connectivity')

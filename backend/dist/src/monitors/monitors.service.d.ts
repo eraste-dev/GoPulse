@@ -6,8 +6,6 @@ export declare class MonitorsService {
     create(createMonitorDto: CreateMonitorDto, userId?: string): Promise<{
         id: string;
         name: string;
-        createdAt: Date;
-        updatedAt: Date;
         url: string;
         method: string;
         interval: number;
@@ -18,6 +16,8 @@ export declare class MonitorsService {
         expectedStatus: number;
         regions: string[];
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         userId: string;
     }>;
     findAll(): import(".prisma/client").Prisma.PrismaPromise<({
@@ -27,8 +27,6 @@ export declare class MonitorsService {
     } & {
         id: string;
         name: string;
-        createdAt: Date;
-        updatedAt: Date;
         url: string;
         method: string;
         interval: number;
@@ -39,13 +37,13 @@ export declare class MonitorsService {
         expectedStatus: number;
         regions: string[];
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         userId: string;
     })[]>;
     findOne(id: string): import(".prisma/client").Prisma.Prisma__MonitorClient<{
         id: string;
         name: string;
-        createdAt: Date;
-        updatedAt: Date;
         url: string;
         method: string;
         interval: number;
@@ -56,13 +54,13 @@ export declare class MonitorsService {
         expectedStatus: number;
         regions: string[];
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         userId: string;
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs>;
     update(id: string, updateData: Partial<CreateMonitorDto>): Promise<{
         id: string;
         name: string;
-        createdAt: Date;
-        updatedAt: Date;
         url: string;
         method: string;
         interval: number;
@@ -73,13 +71,13 @@ export declare class MonitorsService {
         expectedStatus: number;
         regions: string[];
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         userId: string;
-    }>;
+    } | null>;
     remove(id: string): Promise<{
         id: string;
         name: string;
-        createdAt: Date;
-        updatedAt: Date;
         url: string;
         method: string;
         interval: number;
@@ -90,8 +88,10 @@ export declare class MonitorsService {
         expectedStatus: number;
         regions: string[];
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         userId: string;
-    }>;
+    } | null>;
     checkConnectivity(url: string, timeout?: number): Promise<{
         up: boolean;
         status: number;

@@ -58,15 +58,31 @@ let MonitorsService = class MonitorsService {
         });
     }
     async update(id, updateData) {
-        return this.prisma.monitor.update({
-            where: { id },
-            data: updateData,
-        });
+        try {
+            return await this.prisma.monitor.update({
+                where: { id },
+                data: updateData,
+            });
+        }
+        catch (error) {
+            if (error.code === 'P2025') {
+                return null;
+            }
+            throw error;
+        }
     }
     async remove(id) {
-        return this.prisma.monitor.delete({
-            where: { id },
-        });
+        try {
+            return await this.prisma.monitor.delete({
+                where: { id },
+            });
+        }
+        catch (error) {
+            if (error.code === 'P2025') {
+                return null;
+            }
+            throw error;
+        }
     }
     async checkConnectivity(url, timeout = 5000) {
         const start = Date.now();

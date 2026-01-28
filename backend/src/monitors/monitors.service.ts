@@ -73,10 +73,18 @@ export class MonitorsService {
      * @returns Updated monitor
      */
     async update(id: string, updateData: Partial<CreateMonitorDto>) {
-        return this.prisma.monitor.update({
-            where: { id },
-            data: updateData,
-        });
+        try {
+            return await this.prisma.monitor.update({
+                where: { id },
+                data: updateData,
+            });
+        } catch (error) {
+            if (error.code === 'P2025') {
+                // Record not found
+                return null;
+            }
+            throw error;
+        }
     }
 
     /**
@@ -85,9 +93,16 @@ export class MonitorsService {
      * @returns Deleted monitor
      */
     async remove(id: string) {
-        return this.prisma.monitor.delete({
-            where: { id },
-        });
+        try {
+            return await this.prisma.monitor.delete({
+                where: { id },
+            });
+        } catch (error) {
+            if (error.code === 'P2025') {
+                return null;
+            }
+            throw error;
+        }
     }
 
     /**
