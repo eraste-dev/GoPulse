@@ -14,10 +14,10 @@ cp config.json.example config.json
 # Editez config.json avec vos paramètres SMTP
 
 # 2. Lancer la stack
-make docker-up
+make start
 
 # 3. Initialiser la base de données
-make docker-db-push
+make db-init
 ```
 
 Accédez ensuite au Dashboard : **http://localhost:3000**

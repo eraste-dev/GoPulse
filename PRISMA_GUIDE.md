@@ -12,23 +12,23 @@ C'est le fichier central. Si vous voulez ajouter une table ou changer un champ :
 Comme nous utilisons Docker, l'utilisation directe de `npx prisma` sur votre machine peut échouer (manque de variables d'environnement). Utilisez toujours le **Makefile** ou passez par `docker compose exec` :
 
 ### Synchroniser la DB (Sans migration formelle)
-C'est la commande la plus rapide pour le développement. Elle met à jour la DB pour qu'elle corresponde au schéma.
+C'est la commande la plus rapide pour le développement. Elle met à jour la DB pour qu'elle corresponde au schéma qui se trouve dans `backend/prisma/schema.prisma`.
 ```bash
 make db-init
-# Équivalent de : docker compose exec web npx prisma db push
+# Équivalent de : docker compose exec api npx prisma db push
 ```
 
 ### Ouvrir Prisma Studio (Interface Visuelle)
 Si vous voulez voir vos données dans une interface web (Excel-like) :
 ```bash
-docker compose exec web npx prisma studio --browser none
+docker compose exec api npx prisma studio --browser none
 ```
-*Note : Pour y accéder depuis votre navigateur, il faudra peut-être mapper le port 5555 dans le `docker-compose.yml`.*
+*Note : Le port par défaut est 5555. Assurez-vous qu'il est accessible.*
 
 ### Régénérer le Client
-Si vous changez le schéma, vous devez régénérer le client TypeScript pour avoir l'autocomplétion :
+Si vous changez le schéma dans le backend, vous devez régénérer le client TypeScript :
 ```bash
-docker compose exec web npx prisma generate
+docker compose exec api npx prisma generate
 ```
 
 ## 3. Exemple de code (Comment l'utiliser)

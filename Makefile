@@ -63,12 +63,12 @@ agent:
 ## Nettoyer le projet (supprimer binaire et logs)
 
 
-# Initialise la DB (Prisma Push)
+## Initialiser la base de données (Prisma Push)
 db-init:
 	@echo "📦 Initialisation de la base de données..."
 	docker compose -f $(COMPOSE_FILE) exec api npx prisma db push
 
-# Seed la DB (Données de test)
+## Remplir la base de données avec des données de test (Seed)
 seed:
 	@echo "🌱 Remplissage de la base de données..."
 	docker compose -f $(COMPOSE_FILE) exec api npx prisma db seed
