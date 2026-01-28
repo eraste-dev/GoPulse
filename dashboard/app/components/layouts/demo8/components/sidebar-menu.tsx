@@ -118,7 +118,8 @@ export function SidebarMenu() {
     ));
   };
 
-  const buildMenuChildren = (items: MenuConfig) => {
+  const buildMenuChildren = (items?: MenuConfig) => {
+    if (!items || items.length === 0) return null;
     return items.map((item, index) => {
       if (item.disabled) return null;
       if (item.separator) return <DropdownMenuSeparator key={index} />;

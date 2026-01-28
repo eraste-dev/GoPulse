@@ -17,32 +17,34 @@ let MonitorsService = class MonitorsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(createMonitorDto) {
-        const defaultUser = await this.prisma.user.findFirst();
-        if (!defaultUser) {
-            const user = await this.prisma.user.create({
-                data: {
-                    email: 'admin@eraste.com',
-                    password: 'hashedpassword123',
-                    name: 'Admin',
-                }
-            });
-            return this.prisma.monitor.create({
-                data: {
-                    ...createMonitorDto,
-                    userId: user.id
-                }
-            });
+    async create(createMonitorDto, userId) {
+        let ownerId = userId;
+        if (!ownerId) {
+            const defaultUser = await this.prisma.user.findFirst();
+            if (!defaultUser) {
+                const user = await this.prisma.user.create({
+                    data: {
+                        email: 'admin@eraste.com',
+                        password: 'hashedpassword123',
+                        name: 'Admin',
+                    }
+                });
+                ownerId = user.id;
+            }
+            else {
+                ownerId = defaultUser.id;
+            }
         }
         return this.prisma.monitor.create({
             data: {
                 ...createMonitorDto,
-                userId: defaultUser.id
+                userId: ownerId
             },
         });
     }
     findAll() {
         return this.prisma.monitor.findMany({
+            orderBy: { createdAt: 'desc' },
             include: {
                 _count: {
                     select: { reports: true }
@@ -54,6 +56,42 @@ let MonitorsService = class MonitorsService {
         return this.prisma.monitor.findUnique({
             where: { id },
         });
+    }
+    async update(id, updateData) {
+        return this.prisma.monitor.update({
+            where: { id },
+            data: updateData,
+        });
+    }
+    async remove(id) {
+        return this.prisma.monitor.delete({
+            where: { id },
+        });
+    }
+    async checkConnectivity(url, timeout = 5000) {
+        const start = Date.now();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        try {
+            const response = await fetch(url, { method: 'HEAD', signal: controller.signal });
+            clearTimeout(timeoutId);
+            const latency = Date.now() - start;
+            return {
+                up: response.ok,
+                status: response.status,
+                latency,
+                message: response.ok ? 'Connection successful' : `HTTP Error ${response.status}`
+            };
+        }
+        catch (error) {
+            clearTimeout(timeoutId);
+            return {
+                up: false,
+                status: 0,
+                latency: 0,
+                message: error instanceof Error ? error.message : 'Connection failed'
+            };
+        }
     }
 };
 exports.MonitorsService = MonitorsService;

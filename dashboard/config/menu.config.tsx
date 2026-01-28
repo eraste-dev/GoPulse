@@ -51,6 +51,7 @@ import {
   Users,
   Briefcase as WorkIcon,
   Zap,
+  Activity,
 } from 'lucide-react';
 import { type MenuConfig } from './types';
 
@@ -61,6 +62,15 @@ export const MENU_SIDEBAR: MenuConfig = [
     children: [
       { title: 'Light Sidebar', path: '/' },
       { title: 'Dark Sidebar', path: '/dark-sidebar' },
+    ],
+  },
+  { heading: 'Monitoring' },
+  {
+    title: 'Monitors',
+    icon: Activity,
+    path: '/monitors',
+    children: [
+      { title: 'List', path: '/monitors' },
     ],
   },
   { heading: 'User' },

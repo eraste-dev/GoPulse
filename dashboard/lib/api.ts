@@ -18,7 +18,7 @@ export async function apiFetch(
     if (input.startsWith('/api/')) {
       // Remove leading slash to avoid double slashes
       url =
-        process.env.NEXT_PUBLIC_BASE_PATH +
+        (process.env.NEXT_PUBLIC_BASE_PATH || '') +
         (input.startsWith('/') ? input : '/' + input);
     }
   }

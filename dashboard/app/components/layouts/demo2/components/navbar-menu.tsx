@@ -38,7 +38,8 @@ export function NavbarMenu() {
 
   const { isActive, hasActiveChild } = useMenu(pathname);
 
-  const buildMenu = (items: MenuConfig) => {
+  const buildMenu = (items?: MenuConfig) => {
+    if (!items || items.length === 0) return null;
     return items.map((item, index) => {
       if (item.children) {
         return (
@@ -90,7 +91,8 @@ export function NavbarMenu() {
     });
   };
 
-  const buildSubMenu = (items: MenuConfig) => {
+  const buildSubMenu = (items?: MenuConfig) => {
+    if (!items || items.length === 0) return null;
     return items.map((item, index) => {
       if (item.children) {
         return (
@@ -125,7 +127,7 @@ export function NavbarMenu() {
     <div className="grid">
       <div className="kt-scrollable-x-auto">
         <Menubar className="flex items-stretch border-none bg-transparent p-0 h-auto">
-          {buildMenu(navbarMenu.children as MenuConfig)}
+          {buildMenu(navbarMenu?.children as MenuConfig)}
         </Menubar>
       </div>
     </div>

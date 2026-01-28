@@ -16,10 +16,15 @@ class CreateMonitorDto {
     name;
     url;
     interval;
+    timeout;
+    threshold;
+    regions;
+    method;
+    expectedStatus;
 }
 exports.CreateMonitorDto = CreateMonitorDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Google Check', description: 'Name of the monitor' }),
+    (0, swagger_1.ApiProperty)({ example: 'Google Check', description: 'Friendly name of the monitor' }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateMonitorDto.prototype, "name", void 0);
@@ -34,4 +39,33 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], CreateMonitorDto.prototype, "interval", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 10, description: 'Timeout in seconds', required: false, default: 10 }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateMonitorDto.prototype, "timeout", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 3, description: 'Consecutive failures before alert', required: false, default: 3 }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateMonitorDto.prototype, "threshold", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: ['europe', 'us'], description: 'List of regions to check from', required: false, default: ['europe'] }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], CreateMonitorDto.prototype, "regions", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'GET', description: 'HTTP Method', required: false, default: 'GET' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateMonitorDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 200, description: 'Expected HTTP Status code', required: false, default: 200 }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateMonitorDto.prototype, "expectedStatus", void 0);
 //# sourceMappingURL=create-monitor.dto.js.map

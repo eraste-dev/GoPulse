@@ -16,6 +16,7 @@ exports.MonitorsController = void 0;
 const common_1 = require("@nestjs/common");
 const monitors_service_1 = require("./monitors.service");
 const create_monitor_dto_1 = require("./dto/create-monitor.dto");
+const update_monitor_dto_1 = require("./dto/update-monitor.dto");
 const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let MonitorsController = class MonitorsController {
@@ -23,8 +24,8 @@ let MonitorsController = class MonitorsController {
     constructor(monitorsService) {
         this.monitorsService = monitorsService;
     }
-    create(createMonitorDto) {
-        return this.monitorsService.create(createMonitorDto);
+    create(createMonitorDto, req) {
+        return this.monitorsService.create(createMonitorDto, req.user?.id);
     }
     findAll() {
         return this.monitorsService.findAll();
@@ -32,14 +33,24 @@ let MonitorsController = class MonitorsController {
     findOne(id) {
         return this.monitorsService.findOne(id);
     }
+    update(id, updateMonitorDto) {
+        return this.monitorsService.update(id, updateMonitorDto);
+    }
+    remove(id) {
+        return this.monitorsService.remove(id);
+    }
+    testConnectivity(url) {
+        return this.monitorsService.checkConnectivity(url);
+    }
 };
 exports.MonitorsController = MonitorsController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new monitor' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_monitor_dto_1.CreateMonitorDto]),
+    __metadata("design:paramtypes", [create_monitor_dto_1.CreateMonitorDto, Object]),
     __metadata("design:returntype", void 0)
 ], MonitorsController.prototype, "create", null);
 __decorate([
@@ -57,11 +68,39 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MonitorsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update a monitor' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_monitor_dto_1.UpdateMonitorDto]),
+    __metadata("design:returntype", void 0)
+], MonitorsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete a monitor' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MonitorsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)('test-connectivity'),
+    (0, swagger_1.ApiOperation)({ summary: 'Test connectivity to a URL' }),
+    __param(0, (0, common_1.Body)('url')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MonitorsController.prototype, "testConnectivity", null);
 exports.MonitorsController = MonitorsController = __decorate([
     (0, swagger_1.ApiTags)('monitors'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('monitors'),
+    (0, swagger_1.ApiTags)('monitors'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [monitors_service_1.MonitorsService])
 ], MonitorsController);
 //# sourceMappingURL=monitors.controller.js.map

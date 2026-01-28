@@ -1,9 +1,10 @@
 import { MonitorsService } from './monitors.service';
 import { CreateMonitorDto } from './dto/create-monitor.dto';
+import { UpdateMonitorDto } from './dto/update-monitor.dto';
 export declare class MonitorsController {
     private readonly monitorsService;
     constructor(monitorsService: MonitorsService);
-    create(createMonitorDto: CreateMonitorDto): Promise<{
+    create(createMonitorDto: CreateMonitorDto, req: any): Promise<{
         id: string;
         name: string;
         createdAt: Date;
@@ -58,4 +59,44 @@ export declare class MonitorsController {
         isActive: boolean;
         userId: string;
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs>;
+    update(id: string, updateMonitorDto: UpdateMonitorDto): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        url: string;
+        method: string;
+        interval: number;
+        timeout: number;
+        threshold: number;
+        headers: import("@prisma/client/runtime/library").JsonValue | null;
+        userAgent: string | null;
+        expectedStatus: number;
+        regions: string[];
+        isActive: boolean;
+        userId: string;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        url: string;
+        method: string;
+        interval: number;
+        timeout: number;
+        threshold: number;
+        headers: import("@prisma/client/runtime/library").JsonValue | null;
+        userAgent: string | null;
+        expectedStatus: number;
+        regions: string[];
+        isActive: boolean;
+        userId: string;
+    }>;
+    testConnectivity(url: string): Promise<{
+        up: boolean;
+        status: number;
+        latency: number;
+        message: string;
+    }>;
 }

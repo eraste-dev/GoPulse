@@ -45,11 +45,43 @@
     "settings": "Settings",
     "profile": "Profile"
   },
-  "messages": {
+  "message": {
     "unauthorized": "Unauthorized access.",
     "system_error": "Oops! Something didn't go as planned. Please try again in a moment.",
     "invalid_input": "Invalid input. Please check your data and try again.",
     "data_not_found": "Requested data not found.",
     "delete_restricted_error": "Unable to delete this record because it is linked to other records."
+  },
+  "monitors": {
+    "title": "Monitors",
+    "subtitle": "Manage your website monitors and view their status.",
+    "add_monitor": "Add Monitor",
+    "table": {
+      "url_name": "URL / Name",
+      "status": "Status",
+      "last_code": "Last Status Code",
+      "response_time": "Response Time",
+      "last_check": "Last Check",
+      "actions": "Actions",
+      "empty": "No monitors found. Create one to get started."
+    },
+    "create": {
+      "title": "Create Monitor",
+      "description": "Configure a new website to monitor.",
+      "general_info": "General Information",
+      "friendly_name": "Friendly Name",
+      "url": "URL",
+      "method": "HTTP Method",
+      "test_connectivity": "Test",
+      "compliance": "Compliance & Thresholds",
+      "interval": "Check Interval (seconds)",
+      "timeout": "Timeout (seconds)",
+      "timeout_desc": "Max time to wait for a response.",
+      "threshold": "Failure Threshold",
+      "threshold_desc": "Alert after X consecutive failures.",
+      "advanced": "Advanced Settings",
+      "regions": "Check Regions",
+      "success": "Monitor created successfully"
+    }
   }
 }

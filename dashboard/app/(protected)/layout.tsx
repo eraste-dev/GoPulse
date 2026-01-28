@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { ScreenLoader } from '@/components/common/screen-loader';
 import { Demo1Layout } from '../components/layouts/demo1/layout';
+import Demo2Layout from '../components/layouts/demo2/layout';
+import Demo3Layout from '../components/layouts/demo3/layout';
 
 export default function ProtectedLayout({
   children,
@@ -24,5 +26,5 @@ export default function ProtectedLayout({
     return <ScreenLoader />;
   }
 
-  return session ? <Demo1Layout>{children}</Demo1Layout> : null;
+  return session ? <Demo3Layout>{children}</Demo3Layout> : null;
 }
